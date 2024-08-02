@@ -1,21 +1,27 @@
+
 const btnAdvice = document.querySelector('.elipse');
 
-function getAdvice () {
-const xhr = new XMLHttpRequest();
-xhr.open('GET', 'https://api.adviceslip.com/advice');
-xhr.onreadystatechange = function () {
-    if (this.readyState === 4 && this.status === 200) {
-        const advice = JSON.parse(this.responseText);
+function getAdvice() {
+  fetch('https://api.adviceslip.com/advice')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      const advice = data.slip.advice;
+      const adviceId = data.slip.id;
 
-        const adviceText = document.querySelector('h2');
-        adviceText.innerHTML = advice.slip.advice;
+      const adviceText = document.querySelector('h2');
+      adviceText.innerHTML = advice;
 
-        const adviceId = document.querySelector('.id');
-        adviceId.innerHTML = `A D V I C E # ${advice.slip.id}`;
- }
-};
-xhr.send();
+      const adviceIdElement = document.querySelector('.id');
+      adviceIdElement.innerHTML = `A D V I C E # ${adviceId}`;
+    })
+    .catch(error => {
+      console.error('There has been a problem with your fetch operation:', error);
+    });
 }
 
 btnAdvice.addEventListener('click', getAdvice);
-
